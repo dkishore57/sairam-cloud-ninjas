@@ -238,6 +238,32 @@ app.post("/api/progress/watch", authMiddleware, async (req, res) => {
   return res.json(data)
 })
 
+app.post("/api/progress/unwatch", authMiddleware, async (req, res) => {
+  const { pathId, videoId } = req.body || {}
+  if(!pathId || !videoId){
+    return res.status(400).json({ message: "pathId and videoId are required" })
+  }
+
+  const selectedPath = PATHS_BY_ID[pathId]
+  if(!selectedPath){
+    return res.status(404).json({ message: "Invalid path" })
+  }
+
+  await dbQuery(
+    "DELETE FROM user_video_progress WHERE user_id = ? AND path_id = ? AND video_id = ?",
+    [req.user.id, pathId, videoId]
+  )
+
+  // If a user marks any video as unwatched, completion for that path should be removed.
+  await dbQuery(
+    "DELETE FROM user_path_completion WHERE user_id = ? AND path_id = ?",
+    [req.user.id, pathId]
+  )
+
+  const data = await getProgressByUserId(req.user.id)
+  return res.json(data)
+})
+
 app.post("/api/progress/complete", authMiddleware, async (req, res) => {
   const { pathId } = req.body || {}
   if(!pathId){

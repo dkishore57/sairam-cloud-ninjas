@@ -24,23 +24,17 @@ function render(){
   container.innerHTML = path.videos.map(video => `
     <article class="video-card">
       ${video.url
-        ? `<iframe
-            src="${video.url}"
-            class="video-frame"
-            loading="lazy"
-            allowfullscreen
-            title="${video.title}"></iframe>`
-        : `<div class="video-placeholder">Video link pending</div>`
+        ? `<a class="yt-link" href="${video.url}" target="_blank" rel="noopener noreferrer">Click to watch on YouTube</a>`
+        : `<div class="video-placeholder">YouTube link pending</div>`
       }
       <div class="video-meta">
         <div>
           <h4>${video.title}</h4>
           <p class="meta">${video.subdomain || "General"}</p>
         </div>
-        <p>${video.durationMin} min</p>
       </div>
-      <button class="video-watch-btn" data-video-id="${video.id}" ${isWatched(video.id) ? "disabled" : ""}>
-        ${isWatched(video.id) ? "Watched" : "Mark as Watched"}
+      <button class="video-watch-btn" data-video-id="${video.id}">
+        ${isWatched(video.id) ? "Mark as Unwatched" : "Mark as Watched"}
       </button>
     </article>
   `).join("")
@@ -57,15 +51,17 @@ function render(){
   container.querySelectorAll(".video-watch-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
       try{
-        await apiPost("/progress/watch", { pathId: path.id, videoId: btn.dataset.videoId })
-        const data = await apiGet("/progress")
-        progress = data.progress
+        const videoId = btn.dataset.videoId
+        const endpoint = isWatched(videoId) ? "/progress/unwatch" : "/progress/watch"
+        const data = await apiPost(endpoint, { pathId: path.id, videoId })
+        progress = data.progress || progress
         render()
       }catch(error){
         alert(error.message)
       }
     })
   })
+
 }
 
 async function init(){

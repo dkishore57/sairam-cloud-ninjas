@@ -18,7 +18,13 @@ async function request(path, options = {}){
     headers
   })
 
-  const payload = await response.json().catch(() => ({}))
+  const rawText = await response.text()
+  let payload = {}
+  try{
+    payload = rawText ? JSON.parse(rawText) : {}
+  }catch(_error){
+    payload = {}
+  }
 
   if(response.status === 401){
     clearSession()
@@ -28,7 +34,8 @@ async function request(path, options = {}){
   }
 
   if(!response.ok){
-    const error = new Error(payload.message || "Request failed")
+    const fallback = rawText && rawText.length < 140 ? rawText : `HTTP ${response.status} ${response.statusText}`
+    const error = new Error(payload.message || fallback || "Request failed")
     error.code = payload.code
     error.retryAfterSec = payload.retryAfterSec
     throw error

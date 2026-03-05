@@ -12,7 +12,7 @@ export const PATHS = [
         id: "devops-topic-1",
         title: "Linux and Bash",
         durationMin: 120,
-        url: "",
+        url: "https://youtube.com/playlist?list=PLdpzxOOAlwvIBIRWcReRV-m2kgIW6V6gr",
         tags: ["linux", "bash"]
       },
       {

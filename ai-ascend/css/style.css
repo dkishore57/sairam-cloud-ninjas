@@ -92,6 +92,12 @@ body{
   line-height:1.7;
 }
 
+.hero-note{
+  margin-top:10px;
+  color:#9fead8;
+  font-size:0.92rem;
+}
+
 .actions{
   margin-top:30px;
   display:flex;
@@ -278,14 +284,28 @@ select{
 
 .video-placeholder{
   width:100%;
-  aspect-ratio:16 / 9;
   border-radius:12px;
   border:1px dashed #ffffff45;
   background:#0b1f31;
   color:#c1d4e7;
-  display:grid;
-  place-items:center;
+  display:block;
+  padding:12px;
   font-size:0.95rem;
+}
+
+.yt-link{
+  display:inline-block;
+  width:fit-content;
+  text-decoration:none;
+  color:#071422;
+  background:linear-gradient(120deg, var(--accent), #31ddb2);
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:600;
+}
+
+.yt-link:hover{
+  opacity:0.9;
 }
 
 .video-card{
@@ -295,6 +315,12 @@ select{
   padding:10px;
   display:grid;
   gap:10px;
+}
+
+.panel-note{
+  margin-top:8px;
+  color:#9fead8;
+  font-size:0.9rem;
 }
 
 .video-meta{
@@ -349,6 +375,7 @@ select{
 .status.success{
   color:#95f7cb;
 }
+
 
 @media (max-width:900px){
   .learn-layout{
