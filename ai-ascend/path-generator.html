@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Path Generator</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="brand">CAREER CRAFT</div>
+  <nav class="topnav">
+    <a class="text-link" href="index.html">Home</a>
+    <a class="text-link" href="dashboard.html">Dashboard</a>
+    <a class="text-link" href="skill-gap.html">AI Skill Gap</a>
+    <button class="text-link-btn logout-btn" type="button">Logout</button>
+  </nav>
+</header>
+
+<main class="pathgen-main">
+  <section class="section-head">
+    <p class="eyebrow">AI Personalized Learning Path Generator</p>
+    <h2>Build Your Custom Roadmap</h2>
+    <p class="section-subtitle">Tell the AI your level, goal, available weekly time, and learning style. It will generate a month-wise roadmap with resources and outcomes.</p>
+  </section>
+
+  <section class="pathgen-grid">
+    <article class="panel form-panel">
+      <h3>Your Inputs</h3>
+      <select id="skill-level">
+        <option value="Beginner">Beginner</option>
+        <option value="Intermediate">Intermediate</option>
+        <option value="Advanced">Advanced</option>
+      </select>
+      <input id="career-goal" placeholder="Career goal (e.g., Data Scientist)">
+      <input id="weekly-hours" type="number" min="1" max="80" placeholder="Time per week (hours)">
+      <select id="learning-style">
+        <option value="Project-based">Project-based</option>
+        <option value="Video-first">Video-first</option>
+        <option value="Reading + Notes">Reading + Notes</option>
+        <option value="Hands-on + Mentorship">Hands-on + Mentorship</option>
+      </select>
+      <button id="generate-path-btn" data-label="Generate Roadmap">Generate Roadmap</button>
+      <p id="pathgen-status" class="status"></p>
+    </article>
+
+    <article class="panel">
+      <h3>Generated Plan</h3>
+      <p id="roadmap-summary" class="section-subtitle">No roadmap yet. Generate one from your profile.</p>
+      <p id="roadmap-estimate" class="meta"></p>
+      <div id="roadmap-timeline" class="timeline-list"></div>
+    </article>
+  </section>
+</main>
+
+<script type="module" src="js/guard.js"></script>
+<script type="module" src="js/path-generator.js"></script>
+<script type="module" src="js/logout.js"></script>
+</body>
+</html>

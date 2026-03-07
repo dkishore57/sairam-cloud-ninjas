@@ -1,6 +1,6 @@
-# AI Ascend
+# Career Craft
 
-AI Ascend is a role-based learning platform with:
+Career Craft is a role-based learning platform with:
 - JWT authentication
 - MySQL user/progress storage
 - AI mentor chat integration
@@ -40,7 +40,7 @@ AI Ascend is a role-based learning platform with:
 4. Commit and push:
    - `git init`
    - `git add .`
-   - `git commit -m "Initial commit: AI Ascend platform"`
+   - `git commit -m "Initial commit: Career Craft platform"`
    - `git branch -M main`
    - `git remote add origin <your-repo-url>`
    - `git push -u origin main`

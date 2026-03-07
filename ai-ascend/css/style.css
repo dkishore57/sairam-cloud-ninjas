@@ -184,6 +184,23 @@ input{
   outline:none;
 }
 
+textarea{
+  width:100%;
+  border:1px solid #ffffff1f;
+  background:#071727;
+  color:var(--text);
+  border-radius:10px;
+  padding:12px;
+  outline:none;
+  resize:vertical;
+  min-height:100px;
+}
+
+textarea:focus{
+  border-color:#39d8bc;
+  box-shadow:0 0 0 3px #19c4a933;
+}
+
 input:focus{
   border-color:#39d8bc;
   box-shadow:0 0 0 3px #19c4a933;
@@ -392,9 +409,75 @@ select{
   color:#95f7cb;
 }
 
+.pathgen-main{
+  max-width:1120px;
+  margin:28px auto 10px;
+}
+
+.pathgen-grid{
+  display:grid;
+  grid-template-columns:minmax(0, 360px) minmax(0, 1fr);
+  gap:16px;
+  align-items:start;
+}
+
+.timeline-list{
+  margin-top:14px;
+  display:grid;
+  gap:10px;
+}
+
+.timeline-card{
+  background:#ffffff08;
+  border:1px solid #ffffff1f;
+  border-radius:12px;
+  padding:12px;
+}
+
+.timeline-card h4{
+  margin-bottom:6px;
+}
+
+.timeline-card ul{
+  margin-left:18px;
+  color:var(--muted);
+}
+
+.timeline-title{
+  margin-top:8px;
+  font-size:0.85rem;
+  color:#9fead8;
+  text-transform:uppercase;
+  letter-spacing:0.6px;
+}
+
+.chip-list{
+  margin:8px 0 14px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.skill-chip{
+  background:#18456e;
+  border:1px solid #2b6da0;
+  color:#dceeff;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:0.85rem;
+}
+
+.open-path-btn{
+  margin-top:8px;
+}
+
 
 @media (max-width:900px){
   .learn-layout{
+    grid-template-columns:1fr;
+  }
+
+  .pathgen-grid{
     grid-template-columns:1fr;
   }
 }

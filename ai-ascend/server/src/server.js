@@ -52,6 +52,259 @@ function extractRetryAfterSec(message){
   return Math.max(1, Math.ceil(value))
 }
 
+function buildPathMentorContext(path){
+  const topTags = (path.tags || []).slice(0, 8).join(", ")
+  const topics = (path.videos || [])
+    .slice(0, 12)
+    .map(video => video.title)
+    .join("; ")
+
+  return [
+    "You are AI Mentor for Career Craft.",
+    `Active learning domain: ${path.title}.`,
+    `Role focus: ${path.role}.`,
+    `Difficulty level: ${path.level}.`,
+    `Domain summary: ${path.description}`,
+    topTags ? `Key concepts: ${topTags}.` : "",
+    topics ? `Learning path topics include: ${topics}.` : "",
+    "Always anchor answers to this active domain unless the user explicitly asks to switch domains.",
+    "Prefer practical, step-by-step guidance and concise examples relevant to this domain."
+  ]
+    .filter(Boolean)
+    .join(" ")
+}
+
+function buildContextualQuestion(path, question){
+  return [
+    `Domain: ${path.title} (${path.level})`,
+    `Role: ${path.role}`,
+    `Description: ${path.description}`,
+    `User question: ${question}`
+  ].join("\n")
+}
+
+function parseJsonFromText(text){
+  if(typeof text !== "string" || !text.trim()){
+    return null
+  }
+
+  try{
+    return JSON.parse(text)
+  }catch(_error){
+    // Continue with fenced/plain block extraction.
+  }
+
+  const first = text.indexOf("{")
+  const last = text.lastIndexOf("}")
+  if(first >= 0 && last > first){
+    const slice = text.slice(first, last + 1)
+    try{
+      return JSON.parse(slice)
+    }catch(_error){
+      return null
+    }
+  }
+
+  return null
+}
+
+function normalizeRoadmap(raw){
+  const fallback = {
+    summary: "Custom roadmap generated.",
+    estimatedCompletion: "4 months",
+    timeline: []
+  }
+  if(!raw || typeof raw !== "object"){
+    return fallback
+  }
+
+  const timeline = Array.isArray(raw.timeline)
+    ? raw.timeline
+      .map(item => ({
+        phase: String(item?.phase || "").trim(),
+        focus: String(item?.focus || "").trim(),
+        resources: Array.isArray(item?.resources) ? item.resources.map(v => String(v).trim()).filter(Boolean).slice(0, 6) : [],
+        outcomes: Array.isArray(item?.outcomes) ? item.outcomes.map(v => String(v).trim()).filter(Boolean).slice(0, 6) : []
+      }))
+      .filter(item => item.phase && item.focus)
+    : []
+
+  return {
+    summary: String(raw.summary || fallback.summary).trim(),
+    estimatedCompletion: String(raw.estimatedCompletion || fallback.estimatedCompletion).trim(),
+    timeline
+  }
+}
+
+const TECH_SKILLS = [
+  "python", "javascript", "typescript", "java", "go", "c++", "sql", "mongodb", "mysql",
+  "postgresql", "redis", "docker", "kubernetes", "linux", "git", "github actions",
+  "terraform", "aws", "azure", "gcp", "node.js", "express", "react", "html", "css",
+  "rest api", "graphql", "microservices", "system design", "api security", "oauth",
+  "jwt", "data structures", "algorithms", "ci/cd", "testing", "unit testing",
+  "machine learning", "deep learning", "pandas", "numpy", "scikit-learn"
+]
+
+const ROLE_SKILL_BASELINES = {
+  "backend developer": ["node.js", "express", "sql", "mongodb", "redis", "docker", "system design", "api security", "jwt", "testing"],
+  "frontend developer": ["html", "css", "javascript", "typescript", "react", "rest api", "testing", "git"],
+  "devops engineer": ["linux", "docker", "kubernetes", "terraform", "aws", "ci/cd", "github actions", "system design"],
+  "cloud engineer": ["aws", "azure", "gcp", "terraform", "docker", "kubernetes", "linux", "ci/cd"],
+  "data scientist": ["python", "sql", "pandas", "numpy", "scikit-learn", "machine learning", "deep learning"],
+  "software developer": ["javascript", "python", "sql", "git", "testing", "rest api", "data structures", "algorithms"]
+}
+
+function normalizeSkillName(skill){
+  return String(skill || "")
+    .toLowerCase()
+    .replace(/[^\w+.#/\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
+function formatSkillName(skill){
+  return String(skill || "")
+    .split(" ")
+    .filter(Boolean)
+    .map(part => part.length <= 3 ? part.toUpperCase() : part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ")
+}
+
+function extractSkillsFromText(text){
+  const lower = String(text || "").toLowerCase()
+  const found = new Set()
+  for(const skill of TECH_SKILLS){
+    if(lower.includes(skill)){
+      found.add(skill)
+    }
+  }
+  return found
+}
+
+function extractLinkedInSkills(linkedinSkills){
+  if(Array.isArray(linkedinSkills)){
+    return linkedinSkills.map(normalizeSkillName).filter(Boolean)
+  }
+  return String(linkedinSkills || "")
+    .split(/[,\n|]/)
+    .map(normalizeSkillName)
+    .filter(Boolean)
+}
+
+function inferTargetRole({ targetRole, resumeText, jobDescriptions }){
+  const explicit = String(targetRole || "").trim()
+  if(explicit){
+    return explicit
+  }
+
+  const source = `${String(resumeText || "")}\n${String(jobDescriptions || "")}`.toLowerCase()
+  const checks = [
+    { pattern: /data scientist|machine learning engineer/, role: "Data Scientist" },
+    { pattern: /backend|api developer|server-side/, role: "Backend Developer" },
+    { pattern: /frontend|front-end|ui developer/, role: "Frontend Developer" },
+    { pattern: /devops|site reliability|sre/, role: "DevOps Engineer" },
+    { pattern: /cloud engineer|cloud architect/, role: "Cloud Engineer" }
+  ]
+  const matched = checks.find(item => item.pattern.test(source))
+  return matched ? matched.role : "Software Developer"
+}
+
+function buildRoleBasedJobDescription(targetRole){
+  const normalized = normalizeSkillName(targetRole)
+  const baselineEntry = Object.entries(ROLE_SKILL_BASELINES).find(([role]) => normalized.includes(role))
+  const baselineSkills = baselineEntry ? baselineEntry[1] : ROLE_SKILL_BASELINES["software developer"]
+  return `Typical ${targetRole} requirements: ${baselineSkills.join(", ")}.`
+}
+
+function compareSkillSets({ resumeText, linkedinSkills, jobDescriptions }){
+  const resumeSkills = extractSkillsFromText(resumeText)
+  const jdSkills = extractSkillsFromText(jobDescriptions)
+  const linkedinSet = new Set(extractLinkedInSkills(linkedinSkills))
+  const userSkills = new Set([...resumeSkills, ...linkedinSet])
+  const missingSkills = [...jdSkills].filter(skill => !userSkills.has(skill))
+  const existingSkills = [...userSkills].filter(skill => jdSkills.has(skill))
+  return {
+    missingSkills,
+    existingSkills,
+    jdSkills: [...jdSkills],
+    userSkills: [...userSkills]
+  }
+}
+
+function recommendPaths({ targetRole, missingSkills }){
+  const roleText = normalizeSkillName(targetRole)
+  const scored = PATHS.map(path => {
+    const pathTokens = new Set([
+      normalizeSkillName(path.title),
+      normalizeSkillName(path.role),
+      ...path.tags.map(normalizeSkillName)
+    ])
+    let score = 0
+
+    for(const skill of missingSkills){
+      if(pathTokens.has(normalizeSkillName(skill))){
+        score += 2
+      }
+    }
+    if(roleText.includes(normalizeSkillName(path.title)) || roleText.includes(normalizeSkillName(path.role))){
+      score += 3
+    }
+    return { path, score }
+  })
+    .sort((a, b) => b.score - a.score)
+    .filter(item => item.score > 0)
+    .slice(0, 3)
+
+  if(scored.length > 0){
+    return scored.map(item => ({
+      pathId: item.path.id,
+      title: item.path.title,
+      reason: `Matches role/skill gaps in ${item.path.tags.slice(0, 3).join(", ")}`
+    }))
+  }
+
+  return PATHS.slice(0, 2).map(path => ({
+    pathId: path.id,
+    title: path.title,
+    reason: "Strong foundational path for broader coverage"
+  }))
+}
+
+function normalizeSkillGapResult(raw, fallback){
+  if(!raw || typeof raw !== "object"){
+    return fallback
+  }
+
+  const cleanList = (value, max = 10) => Array.isArray(value)
+    ? value.map(item => normalizeSkillName(item)).filter(Boolean).slice(0, max).map(formatSkillName)
+    : []
+
+  const aiMissing = cleanList(raw.missingSkills)
+  const aiExisting = cleanList(raw.existingStrengths)
+  const recommendedLearningPaths = Array.isArray(raw.recommendedLearningPaths)
+    ? raw.recommendedLearningPaths
+      .map(item => ({
+        pathId: normalizeSkillName(item?.pathId || ""),
+        title: String(item?.title || "").trim(),
+        reason: String(item?.reason || "").trim()
+      }))
+      .filter(item => item.title)
+      .slice(0, 4)
+    : fallback.recommendedLearningPaths
+
+  return {
+    targetRole: String(raw.targetRole || fallback.targetRole).trim(),
+    missingSkills: aiMissing.length > 0 ? aiMissing : fallback.missingSkills,
+    existingStrengths: aiExisting.length > 0 ? aiExisting : fallback.existingStrengths,
+    recommendedLearningPaths,
+    analysis: {
+      summary: String(raw?.analysis?.summary || fallback.analysis.summary).trim(),
+      next30Days: String(raw?.analysis?.next30Days || fallback.analysis.next30Days).trim()
+    },
+    analysisMethod: "llm+nlp"
+  }
+}
+
 function buildProgress(videoRows, completionRows){
   const watched = {}
   for(const row of videoRows){
@@ -349,8 +602,11 @@ app.post("/api/chat", authMiddleware, async (req, res) => {
     "SELECT role, text FROM chat_messages WHERE user_id = ? AND path_id = ? ORDER BY created_at DESC LIMIT 12",
     [req.user.id, pathId]
   )
+  const selectedPath = PATHS_BY_ID[pathId]
+  const systemContext = buildPathMentorContext(selectedPath)
+  const contextualQuestion = buildContextualQuestion(selectedPath, question)
   const priorHistory = priorRows.reverse()
-  const contents = [...priorHistory, { role: "user", text: question }]
+  const contents = [...priorHistory, { role: "user", text: contextualQuestion }]
     .filter(item => item && item.text)
     .map(item => ({
       role: item.role === "assistant" ? "model" : "user",
@@ -364,7 +620,12 @@ app.post("/api/chat", authMiddleware, async (req, res) => {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents })
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: systemContext }]
+          },
+          contents
+        })
       }
     )
 
@@ -419,6 +680,210 @@ app.post("/api/chat", authMiddleware, async (req, res) => {
   }
 })
 
+app.post("/api/path-generator", authMiddleware, async (req, res) => {
+  const { skillLevel, careerGoal, weeklyHours, learningStyle } = req.body || {}
+  if(!skillLevel || !careerGoal || !weeklyHours || !learningStyle){
+    return res.status(400).json({
+      message: "skillLevel, careerGoal, weeklyHours, and learningStyle are required"
+    })
+  }
+
+  const weeklyHoursNumber = Number(weeklyHours)
+  if(Number.isNaN(weeklyHoursNumber) || weeklyHoursNumber < 1 || weeklyHoursNumber > 80){
+    return res.status(400).json({ message: "weeklyHours must be a number between 1 and 80" })
+  }
+
+  if(!process.env.GEMINI_API_KEY){
+    return res.status(500).json({ message: "Missing GEMINI_API_KEY in server environment" })
+  }
+
+  const instruction = [
+    "You are an expert career mentor generating personalized learning plans.",
+    "Return only valid JSON with this exact shape:",
+    "{",
+    '  "summary": "short paragraph",',
+    '  "estimatedCompletion": "string",',
+    '  "timeline": [',
+    '    {"phase":"Month 1","focus":"...","resources":["..."],"outcomes":["..."]}',
+    "  ]",
+    "}",
+    "Rules:",
+    "- Keep timeline practical and sequential.",
+    "- Include 4 to 8 phases (month-based).",
+    "- Resources should be concrete learning suggestions (course/topic/project type).",
+    "- Outcomes should be measurable.",
+    "- Use the user's weekly time to estimate completion realistically."
+  ].join("\n")
+
+  const userPrompt = [
+    `User profile:`,
+    `- Current skill level: ${String(skillLevel).trim()}`,
+    `- Career goal: ${String(careerGoal).trim()}`,
+    `- Time available per week: ${weeklyHoursNumber} hours`,
+    `- Preferred learning style: ${String(learningStyle).trim()}`,
+    "Generate a personalized learning path."
+  ].join("\n")
+
+  try{
+    const modelToUse = resolvedGeminiModel || GEMINI_MODEL
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: instruction }]
+          },
+          contents: [{ role: "user", parts: [{ text: userPrompt }] }]
+        })
+      }
+    )
+
+    const data = await response.json().catch(() => ({}))
+    if(!response.ok){
+      const upstreamMessage = data?.error?.message || "AI service request failed"
+      const isQuotaError = response.status === 429 || /quota exceeded/i.test(upstreamMessage)
+      if(isQuotaError){
+        const retryAfterSec = extractRetryAfterSec(upstreamMessage)
+        return res.status(429).json({
+          code: "quota_exceeded",
+          message: retryAfterSec
+            ? `AI quota exceeded. Please retry in ${retryAfterSec}s or upgrade billing.`
+            : "AI quota exceeded. Please retry later or upgrade billing.",
+          retryAfterSec
+        })
+      }
+      return res.status(502).json({ code: "upstream_error", message: upstreamMessage })
+    }
+
+    const raw = (data?.candidates?.[0]?.content?.parts || [])
+      .map(part => part?.text || "")
+      .join("")
+      .trim()
+    if(!raw){
+      return res.status(502).json({ message: "AI service returned an empty response" })
+    }
+
+    const parsed = parseJsonFromText(raw)
+    const roadmap = normalizeRoadmap(parsed)
+    return res.json({ roadmap })
+  }catch(_error){
+    return res.status(502).json({ message: "Unable to connect to AI service" })
+  }
+})
+
+app.post("/api/skill-gap-analyzer", authMiddleware, async (req, res) => {
+  const { targetRole, resumeText, linkedinSkills, jobDescriptions } = req.body || {}
+  const cleanResumeText = String(resumeText || "").trim()
+  const cleanJobDescriptions = String(jobDescriptions || "").trim()
+  if(!cleanResumeText && !cleanJobDescriptions){
+    return res.status(400).json({ message: "Provide resumeText or jobDescriptions" })
+  }
+  const resolvedTargetRole = inferTargetRole({
+    targetRole,
+    resumeText: cleanResumeText,
+    jobDescriptions: cleanJobDescriptions
+  })
+  const resolvedJobDescriptions = cleanJobDescriptions || buildRoleBasedJobDescription(resolvedTargetRole)
+
+  const nlp = compareSkillSets({
+    resumeText: cleanResumeText,
+    linkedinSkills,
+    jobDescriptions: resolvedJobDescriptions
+  })
+  const heuristicPaths = recommendPaths({ targetRole: resolvedTargetRole, missingSkills: nlp.missingSkills })
+  const fallback = {
+    targetRole: resolvedTargetRole,
+    missingSkills: nlp.missingSkills.slice(0, 10).map(formatSkillName),
+    existingStrengths: nlp.existingSkills.slice(0, 10).map(formatSkillName),
+    recommendedLearningPaths: heuristicPaths,
+    analysis: {
+      summary: `You want to be a ${resolvedTargetRole}. Build missing skills in a staged manner while reinforcing strengths.`,
+      next30Days: "Focus on the top 2 missing skills with weekly project milestones."
+    },
+    analysisMethod: "nlp"
+  }
+
+  if(!process.env.GEMINI_API_KEY){
+    return res.json({ result: fallback })
+  }
+
+  const systemInstruction = [
+    "You are an expert technical recruiter and learning coach.",
+    "Analyze skill gaps between candidate profile and job descriptions.",
+    "Return only valid JSON with this exact schema:",
+    "{",
+    '  "targetRole":"...",',
+    '  "missingSkills":["..."],',
+    '  "existingStrengths":["..."],',
+    '  "recommendedLearningPaths":[{"pathId":"frontend|backend|devops|cloud","title":"...","reason":"..."}],',
+    '  "analysis":{"summary":"...","next30Days":"..."}',
+    "}",
+    "Rules:",
+    "- Prioritize practical tech skills.",
+    "- Keep missingSkills concise (max 10).",
+    "- Recommend 2 to 4 relevant learning paths.",
+    "- Ensure guidance is actionable."
+  ].join("\n")
+
+  const userPrompt = [
+    `Target role: ${resolvedTargetRole}`,
+    `Resume text: ${cleanResumeText || "Not provided"}`,
+    `LinkedIn skills: ${extractLinkedInSkills(linkedinSkills).join(", ") || "Not provided"}`,
+    `Job descriptions: ${resolvedJobDescriptions}`,
+    `NLP extracted job skills: ${nlp.jdSkills.join(", ") || "none"}`,
+    `NLP extracted user skills: ${nlp.userSkills.join(", ") || "none"}`,
+    `NLP baseline missing skills: ${nlp.missingSkills.join(", ") || "none"}`
+  ].join("\n")
+
+  try{
+    const modelToUse = resolvedGeminiModel || GEMINI_MODEL
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          contents: [{ role: "user", parts: [{ text: userPrompt }] }]
+        })
+      }
+    )
+
+    const data = await response.json().catch(() => ({}))
+    if(!response.ok){
+      const upstreamMessage = data?.error?.message || "AI service request failed"
+      const isQuotaError = response.status === 429 || /quota exceeded/i.test(upstreamMessage)
+      if(isQuotaError){
+        const retryAfterSec = extractRetryAfterSec(upstreamMessage)
+        return res.status(429).json({
+          code: "quota_exceeded",
+          message: retryAfterSec
+            ? `AI quota exceeded. Please retry in ${retryAfterSec}s or upgrade billing.`
+            : "AI quota exceeded. Please retry later or upgrade billing.",
+          retryAfterSec
+        })
+      }
+      return res.status(502).json({ code: "upstream_error", message: upstreamMessage })
+    }
+
+    const raw = (data?.candidates?.[0]?.content?.parts || [])
+      .map(part => part?.text || "")
+      .join("")
+      .trim()
+    if(!raw){
+      return res.json({ result: fallback })
+    }
+
+    const parsed = parseJsonFromText(raw)
+    const result = normalizeSkillGapResult(parsed, fallback)
+    return res.json({ result })
+  }catch(_error){
+    return res.json({ result: fallback })
+  }
+})
+
 app.get("*", (_req, res) => {
   res.sendFile(path.join(PROJECT_ROOT, "index.html"))
 })
@@ -426,7 +891,7 @@ app.get("*", (_req, res) => {
 async function start(){
   await initDatabase()
   app.listen(PORT, () => {
-    console.log(`AI Ascend server running on http://localhost:${PORT}`)
+    console.log(`Career Craft server running on http://localhost:${PORT}`)
   })
   resolveGeminiModel().then(model => {
     resolvedGeminiModel = model

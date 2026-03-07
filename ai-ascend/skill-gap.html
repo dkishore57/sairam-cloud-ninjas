@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Skill Gap Analyzer</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="brand">CAREER CRAFT</div>
+  <nav class="topnav">
+    <a class="text-link" href="index.html">Home</a>
+    <a class="text-link" href="dashboard.html">Dashboard</a>
+    <button class="text-link-btn logout-btn" type="button">Logout</button>
+  </nav>
+</header>
+
+<main class="pathgen-main">
+  <section class="section-head">
+    <p class="eyebrow">AI Skill Gap Analyzer</p>
+    <h2>Analyze Resume vs Job Requirements</h2>
+    <p class="section-subtitle">Tech stack: Resume parser + NLP comparison + LLM analysis.</p>
+  </section>
+
+  <section class="pathgen-grid">
+    <article class="panel form-panel">
+      <h3>Input</h3>
+      <input id="target-role" placeholder="Target role (optional, e.g., Backend Developer)">
+      <input id="resume-file" type="file" accept=".txt,.md,.text">
+      <textarea id="resume-text" rows="6" placeholder="Paste resume text (recommended)"></textarea>
+      <textarea id="linkedin-skills" rows="3" placeholder="LinkedIn skills (optional, comma-separated)"></textarea>
+      <textarea id="job-descriptions" rows="6" placeholder="Job descriptions (optional)"></textarea>
+      <button id="analyze-gap-btn" data-label="Analyze Skill Gap">Analyze Skill Gap</button>
+      <p id="skill-gap-status" class="status"></p>
+    </article>
+
+    <article class="panel">
+      <h3>Analysis Output</h3>
+      <p id="skill-gap-summary" class="section-subtitle">No analysis yet.</p>
+      <p id="analysis-method" class="meta"></p>
+      <h4>Missing Skills</h4>
+      <div id="missing-skills" class="chip-list"></div>
+      <h4>Recommended Learning Paths</h4>
+      <div id="recommended-paths" class="timeline-list"></div>
+      <h4>Next 30 Days</h4>
+      <p id="next-30-days" class="section-subtitle"></p>
+    </article>
+  </section>
+</main>
+
+<script type="module" src="js/guard.js"></script>
+<script type="module" src="js/skill-gap.js"></script>
+<script type="module" src="js/logout.js"></script>
+</body>
+</html>

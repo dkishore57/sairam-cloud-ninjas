@@ -1,6 +1,6 @@
-const TOKEN_KEY = "ai_ascend_token"
-const USER_KEY = "ai_ascend_user"
-const SELECTED_PATH_KEY = "ai_ascend_selected_path"
+const TOKEN_KEY = "career_craft_token"
+const USER_KEY = "career_craft_user"
+const SELECTED_PATH_KEY = "career_craft_selected_path"
 
 export function setSession(token, user){
   localStorage.setItem(TOKEN_KEY, token)
