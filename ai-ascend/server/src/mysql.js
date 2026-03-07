@@ -47,6 +47,30 @@ export async function initDatabase(){
     await connection.query(`USE \`${process.env.MYSQL_DATABASE}\``)
     const schemaSql = await fs.readFile(SCHEMA_PATH, "utf-8")
     await connection.query(schemaSql)
+
+    const columns = await connection.query(
+      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'chat_messages' AND COLUMN_NAME = 'path_id'`,
+      [process.env.MYSQL_DATABASE]
+    )
+    const hasPathId = Array.isArray(columns?.[0]) && columns[0].length > 0
+    if(!hasPathId){
+      await connection.query(
+        "ALTER TABLE chat_messages ADD COLUMN path_id VARCHAR(64) NOT NULL DEFAULT 'frontend' AFTER user_id"
+      )
+    }
+
+    const indexes = await connection.query(
+      `SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS
+       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'chat_messages' AND INDEX_NAME = 'idx_chat_user_path_created_at'`,
+      [process.env.MYSQL_DATABASE]
+    )
+    const hasIndex = Array.isArray(indexes?.[0]) && indexes[0].length > 0
+    if(!hasIndex){
+      await connection.query(
+        "CREATE INDEX idx_chat_user_path_created_at ON chat_messages (user_id, path_id, created_at)"
+      )
+    }
   }finally{
     await connection.end()
   }

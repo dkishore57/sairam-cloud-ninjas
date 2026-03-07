@@ -24,7 +24,7 @@ function render(){
   container.innerHTML = path.videos.map(video => `
     <article class="video-card">
       ${video.url
-        ? `<a class="yt-link" href="${video.url}" target="_blank" rel="noopener noreferrer">Click to watch on YouTube</a>`
+        ? `<a class="yt-link" href="${video.url}" target="_blank" rel="noopener noreferrer">Click to watch</a>`
         : `<div class="video-placeholder">YouTube link pending</div>`
       }
       <div class="video-meta">

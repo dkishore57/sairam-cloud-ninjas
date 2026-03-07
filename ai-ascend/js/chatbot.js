@@ -1,6 +1,8 @@
 import { apiGet, apiPost } from "./services/api.js"
+import { getSelectedPath } from "./services/session.js"
 
 const history = []
+const pathId = getSelectedPath() || "frontend"
 
 function renderMessages(){
   const list = document.getElementById("chat-messages")
@@ -32,7 +34,7 @@ async function askAI(){
   button.textContent = "Thinking..."
 
   try{
-    const data = await apiPost("/chat", { question })
+    const data = await apiPost("/chat", { question, pathId })
     history.length = 0
     history.push(...(data.history || []))
   }catch(error){
@@ -56,7 +58,7 @@ window.askAI = askAI
 
 async function init(){
   try{
-    const data = await apiGet("/chat/history")
+    const data = await apiGet(`/chat/history?pathId=${encodeURIComponent(pathId)}`)
     history.push(...(data.history || []))
   }catch(_error){
     // If history fetch fails, chat still works for current session.

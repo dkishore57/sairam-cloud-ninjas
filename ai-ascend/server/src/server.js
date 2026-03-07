@@ -198,10 +198,18 @@ app.post("/api/auth/login", async (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" })
   }
 
+  // Fresh login starts with clean AI mentor history.
+  await dbQuery("DELETE FROM chat_messages WHERE user_id = ?", [user.id])
+
   return res.json({
     token: createToken(user),
     user: toPublicUser(user)
   })
+})
+
+app.post("/api/auth/logout", authMiddleware, async (req, res) => {
+  await dbQuery("DELETE FROM chat_messages WHERE user_id = ?", [req.user.id])
+  res.json({ message: "Logged out and chat history cleared" })
 })
 
 app.get("/api/auth/me", authMiddleware, async (req, res) => {
@@ -294,9 +302,14 @@ app.post("/api/progress/complete", authMiddleware, async (req, res) => {
 })
 
 app.get("/api/chat/history", authMiddleware, async (req, res) => {
+  const pathId = String(req.query.pathId || "").trim() || "frontend"
+  if(!PATHS_BY_ID[pathId]){
+    return res.status(400).json({ message: "Invalid pathId" })
+  }
+
   const rows = await dbQuery(
-    "SELECT role, text, created_at FROM chat_messages WHERE user_id = ? ORDER BY created_at DESC LIMIT 30",
-    [req.user.id]
+    "SELECT role, text, created_at FROM chat_messages WHERE user_id = ? AND path_id = ? ORDER BY created_at DESC LIMIT 30",
+    [req.user.id, pathId]
   )
   const history = rows.reverse().map(row => ({
     role: row.role,
@@ -307,14 +320,25 @@ app.get("/api/chat/history", authMiddleware, async (req, res) => {
 })
 
 app.delete("/api/chat/history", authMiddleware, async (req, res) => {
-  await dbQuery("DELETE FROM chat_messages WHERE user_id = ?", [req.user.id])
+  const pathId = String(req.query.pathId || "").trim()
+  if(pathId){
+    if(!PATHS_BY_ID[pathId]){
+      return res.status(400).json({ message: "Invalid pathId" })
+    }
+    await dbQuery("DELETE FROM chat_messages WHERE user_id = ? AND path_id = ?", [req.user.id, pathId])
+  }else{
+    await dbQuery("DELETE FROM chat_messages WHERE user_id = ?", [req.user.id])
+  }
   res.json({ history: [] })
 })
 
 app.post("/api/chat", authMiddleware, async (req, res) => {
-  const { question } = req.body || {}
+  const { question, pathId } = req.body || {}
   if(!question || typeof question !== "string"){
     return res.status(400).json({ message: "Question is required" })
+  }
+  if(!pathId || !PATHS_BY_ID[pathId]){
+    return res.status(400).json({ message: "Valid pathId is required" })
   }
 
   if(!process.env.GEMINI_API_KEY){
@@ -322,8 +346,8 @@ app.post("/api/chat", authMiddleware, async (req, res) => {
   }
 
   const priorRows = await dbQuery(
-    "SELECT role, text FROM chat_messages WHERE user_id = ? ORDER BY created_at DESC LIMIT 12",
-    [req.user.id]
+    "SELECT role, text FROM chat_messages WHERE user_id = ? AND path_id = ? ORDER BY created_at DESC LIMIT 12",
+    [req.user.id, pathId]
   )
   const priorHistory = priorRows.reverse()
   const contents = [...priorHistory, { role: "user", text: question }]
@@ -375,13 +399,13 @@ app.post("/api/chat", authMiddleware, async (req, res) => {
     }
 
     await dbQuery(
-      "INSERT INTO chat_messages (user_id, role, text) VALUES (?, ?, ?), (?, ?, ?)",
-      [req.user.id, "user", question, req.user.id, "assistant", answer]
+      "INSERT INTO chat_messages (user_id, path_id, role, text) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",
+      [req.user.id, pathId, "user", question, req.user.id, pathId, "assistant", answer]
     )
 
     const historyRows = await dbQuery(
-      "SELECT role, text, created_at FROM chat_messages WHERE user_id = ? ORDER BY created_at DESC LIMIT 30",
-      [req.user.id]
+      "SELECT role, text, created_at FROM chat_messages WHERE user_id = ? AND path_id = ? ORDER BY created_at DESC LIMIT 30",
+      [req.user.id, pathId]
     )
     const history = historyRows.reverse().map(row => ({
       role: row.role,

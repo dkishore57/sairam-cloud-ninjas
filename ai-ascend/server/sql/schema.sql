@@ -30,10 +30,11 @@ CREATE TABLE IF NOT EXISTS user_path_completion (
 CREATE TABLE IF NOT EXISTS chat_messages (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id CHAR(36) NOT NULL,
+  path_id VARCHAR(64) NOT NULL DEFAULT 'frontend',
   role ENUM('user', 'assistant') NOT NULL,
   text MEDIUMTEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_chat_user_created_at (user_id, created_at),
+  INDEX idx_chat_user_path_created_at (user_id, path_id, created_at),
   CONSTRAINT fk_chat_messages_user
     FOREIGN KEY (user_id) REFERENCES users(id)
     ON DELETE CASCADE
