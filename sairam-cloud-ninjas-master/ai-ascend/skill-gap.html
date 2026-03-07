@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Skill Gap Analyzer</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="brand">Careercraft</div>
+  <nav class="topnav">
+    <a class="text-link" href="dashboard.html">Dashboard</a>
+    <a class="text-link" href="career-quiz.html">Career Quiz</a>
+    <a class="text-link" href="personalized-path.html">AI Path</a>
+    <a class="text-link" href="learn.html">Learn</a>
+    <a class="text-link" href="index.html">Home</a>
+  </nav>
+</header>
+
+<main class="dashboard-main">
+  <section class="section-head">
+    <p class="eyebrow">AI Skill Gap</p>
+    <h2>Analyze Your Missing Skills</h2>
+    <p class="section-subtitle">Paste your resume text or skills, add target role + job description, and get AI-driven gap analysis, ATS score, and resume improvements.</p>
+  </section>
+
+  <section class="panel ai-form-panel">
+    <div class="ai-grid">
+      <label>
+        Target Role
+        <input id="target-role" placeholder="e.g. Backend Developer">
+      </label>
+      <label>
+        Existing Skills (comma separated)
+        <input id="provided-skills" placeholder="e.g. Node.js, SQL, Express">
+      </label>
+    </div>
+
+    <div class="ai-grid">
+      <label>
+        Resume PDF (optional)
+        <input id="resume-pdf" type="file" accept=".pdf,application/pdf">
+      </label>
+    </div>
+
+    <div class="ai-grid">
+      <label>
+        Resume Text
+        <textarea id="resume-text" rows="8" placeholder="Paste resume content here"></textarea>
+      </label>
+      <label>
+        Job Description (optional)
+        <textarea id="job-description" rows="8" placeholder="Paste target job description"></textarea>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button id="analyze-skill-gap-btn" data-label="Analyze Skill Gap">Analyze Skill Gap</button>
+    </div>
+    <p id="skill-gap-status" class="status"></p>
+  </section>
+
+  <section id="skill-gap-output" class="panel roadmap-panel">
+    <p class="section-subtitle">No report yet.</p>
+  </section>
+</main>
+
+<script type="module" src="js/guard.js"></script>
+<script type="module" src="js/skill-gap.js"></script>
+</body>
+</html>

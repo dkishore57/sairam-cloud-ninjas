@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Personalized Path</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="brand">Careercraft</div>
+  <nav class="topnav">
+    <a class="text-link" href="dashboard.html">Dashboard</a>
+    <a class="text-link" href="career-quiz.html">Career Quiz</a>
+    <a class="text-link" href="skill-gap.html">Skill Gap</a>
+    <a class="text-link" href="learn.html">Learn</a>
+    <a class="text-link" href="index.html">Home</a>
+  </nav>
+</header>
+
+<main class="dashboard-main">
+  <section class="section-head">
+    <p class="eyebrow">AI Planner</p>
+    <h2>Generate Your Personalized Learning Roadmap</h2>
+    <p class="section-subtitle">Tell us your goal and constraints. AI will create a practical, phased plan you can follow week by week.</p>
+  </section>
+
+  <section class="panel ai-form-panel">
+    <div class="ai-grid">
+      <label>
+        Career Goal
+        <input id="career-goal" placeholder="e.g. Data Scientist">
+      </label>
+
+      <label>
+        Current Skill Level
+        <select id="current-level">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+      </label>
+
+      <label>
+        Time Available Per Week (hours)
+        <input id="hours-per-week" type="number" min="1" max="80" value="10">
+      </label>
+
+      <label>
+        Preferred Learning Style
+        <select id="learning-style">
+          <option value="Hands-on projects">Hands-on projects</option>
+          <option value="Video first">Video first</option>
+          <option value="Reading + docs">Reading + docs</option>
+          <option value="Mixed">Mixed</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button id="generate-path-btn" data-label="Generate Path">Generate Path</button>
+    </div>
+    <p id="path-status" class="status"></p>
+  </section>
+
+  <section id="path-output" class="panel roadmap-panel">
+    <p class="section-subtitle">No generated path yet.</p>
+  </section>
+</main>
+
+<script type="module" src="js/guard.js"></script>
+<script type="module" src="js/path-generator.js"></script>
+</body>
+</html>

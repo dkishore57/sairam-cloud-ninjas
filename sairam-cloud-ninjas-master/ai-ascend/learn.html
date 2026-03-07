@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="brand">Careercraft</div>
+  <nav class="topnav">
+    <a class="text-link" href="dashboard.html">Dashboard</a>
+    <a class="text-link" href="index.html">Home</a>
+  </nav>
+</header>
+
+<main class="learn-layout">
+  <section class="panel">
+    <p class="eyebrow">Selected Path</p>
+    <h2 id="learn-title">Learning Videos</h2>
+    <p id="learn-description" class="section-subtitle"></p>
+    <p class="panel-note">This path is curated to cover the full domain. Use Fullscreen for focused learning.</p>
+    <p id="path-progress" class="meta progress"></p>
+    <section id="prediction-panel" class="prediction-panel">
+      <h3>Smart Progress Prediction</h3>
+      <p id="prediction-text" class="meta">Prediction will appear after you start watching videos.</p>
+      <p id="prediction-hint" class="section-subtitle"></p>
+    </section>
+    <button id="complete-path-btn" class="button-secondary">Complete Path</button>
+    <div id="videos" class="video-container"></div>
+    <section id="quiz-panel" class="quiz-panel">
+      <h3>AI Flashcard Quiz Generator</h3>
+      <p class="section-subtitle">Click "Generate Flashcards" on any topic to create NotebookLM-style study cards.</p>
+      <p id="quiz-status" class="status"></p>
+      <div id="quiz-output"></div>
+    </section>
+  </section>
+
+  <aside id="chatbot" class="panel chatbot-panel">
+    <h3>AI Mentor</h3>
+    <p class="section-subtitle">Ask any concept or coding doubt here.</p>
+    <div id="chat-messages" class="chat-messages"></div>
+    <input id="question" placeholder="Ask your doubt">
+    <button id="ask-btn" onclick="askAI()">Ask</button>
+  </aside>
+</main>
+
+<script type="module" src="js/guard.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script type="module" src="js/learn.js"></script>
+<script type="module" src="js/chatbot.js"></script>
+</body>
+</html>

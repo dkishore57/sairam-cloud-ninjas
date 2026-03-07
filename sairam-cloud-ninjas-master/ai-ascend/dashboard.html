@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="brand">CareerCraft</div>
+  <nav class="topnav">
+    <a class="text-link" href="index.html">Home</a>
+    <a class="text-link" href="career-quiz.html">Career Quiz</a>
+    <a class="text-link" href="personalized-path.html">AI Path</a>
+    <a class="text-link" href="skill-gap.html">Skill Gap</a>
+    <a class="text-link" href="learn.html">Learn</a>
+  </nav>
+</header>
+
+<main class="dashboard-main">
+  <section class="section-head">
+    <p class="eyebrow">Learning Paths</p>
+    <h2>Select Your Focus Area</h2>
+    <p class="section-subtitle">Each domain is designed as a complete study plan with high-quality tutorials from fundamentals to project-level readiness.</p>
+  </section>
+
+  <section class="panel filters">
+    <input id="path-search" placeholder="Search path, topic, or keyword">
+    <select id="level-filter">
+      <option value="all">All Levels</option>
+      <option value="beginner">Beginner</option>
+      <option value="intermediate">Intermediate</option>
+      <option value="advanced">Advanced</option>
+    </select>
+  </section>
+
+  <section id="progress-stats" class="stats-grid">
+  </section>
+
+  <section class="panel gamification-panel">
+    <p class="eyebrow">Gamification</p>
+    <h3>Your Momentum</h3>
+    <div id="gamification-stats" class="stats-grid"></div>
+    <div id="badge-list" class="badge-list"></div>
+    <h3>Leaderboard</h3>
+    <div id="leaderboard-list" class="leaderboard-list"></div>
+  </section>
+
+  <section class="panel planner-panel">
+    <div class="planner-header">
+      <div>
+        <p class="eyebrow">Weekly Study Planner</p>
+        <h3>Plan and Track Your Sessions</h3>
+        <p class="section-subtitle">Organize study sessions, set reminders, and sync with calendar.</p>
+      </div>
+      <div class="planner-actions">
+        <button id="planner-prev-week" type="button" class="button-secondary">Previous Week</button>
+        <button id="planner-next-week" type="button" class="button-secondary">Next Week</button>
+        <button id="planner-sync-google" type="button" class="button-secondary">Sync Google</button>
+        <button id="planner-sync-outlook" type="button" class="button-secondary">Sync Outlook</button>
+        <button id="planner-add-task" type="button">Add Task</button>
+      </div>
+    </div>
+    <p id="planner-week-label" class="meta"></p>
+    <div id="planner-summary" class="stats-grid"></div>
+    <div id="planner-reminders" class="planner-reminders"></div>
+    <div id="planner-calendar" class="planner-calendar"></div>
+  </section>
+
+  <section id="path-grid" class="card-grid">
+  </section>
+</main>
+
+<div id="planner-modal" class="planner-modal hidden">
+  <div class="planner-modal-content panel">
+    <div class="planner-modal-head">
+      <h3 id="planner-modal-title">Add Study Task</h3>
+      <button id="planner-close-modal" type="button" class="button-secondary">Close</button>
+    </div>
+    <form id="planner-form" class="planner-form">
+      <input id="planner-task-id" type="hidden">
+      <label>Course Name
+        <input id="planner-course" required placeholder="e.g. Frontend Developer">
+      </label>
+      <label>Topic
+        <input id="planner-topic" required placeholder="e.g. React Hooks">
+      </label>
+      <label>Planned Date & Time
+        <input id="planner-start" type="datetime-local" required>
+      </label>
+      <label>Duration (minutes)
+        <input id="planner-duration" type="number" min="5" max="720" value="60" required>
+      </label>
+      <label>Priority
+        <select id="planner-priority">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </label>
+      <label>Status
+        <select id="planner-status">
+          <option value="pending" selected>Pending</option>
+          <option value="completed">Completed</option>
+          <option value="skipped">Skipped</option>
+        </select>
+      </label>
+      <label>Reminder
+        <select id="planner-reminder-select">
+          <option value="10" selected>10 minutes before</option>
+          <option value="30">30 minutes before</option>
+          <option value="custom">Custom</option>
+        </select>
+      </label>
+      <label id="planner-custom-reminder-wrap" class="hidden">Custom Reminder (minutes)
+        <input id="planner-reminder-custom" type="number" min="1" max="1440" value="10">
+      </label>
+      <div class="planner-form-actions">
+        <button type="submit" id="planner-save-btn">Save Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="js/guard.js"></script>
+<script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

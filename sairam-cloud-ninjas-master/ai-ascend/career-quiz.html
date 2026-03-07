@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Career Quiz</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="brand">Careercraft</div>
+  <nav class="topnav">
+    <a class="text-link" href="dashboard.html">Skip to Dashboard</a>
+    <a class="text-link" href="index.html">Home</a>
+  </nav>
+</header>
+
+<main class="dashboard-main">
+  <section class="section-head">
+    <p class="eyebrow">Career Quiz</p>
+    <h2>Tell us your interests before we build your dashboard.</h2>
+    <p class="section-subtitle">This quick quiz recommends the best-fit career tracks and matching learning paths.</p>
+  </section>
+
+  <section class="panel ai-form-panel">
+    <div class="ai-grid">
+      <label>
+        Do you enjoy logic-heavy problem solving?
+        <select id="logic-preference">
+          <option value="yes">Yes</option>
+          <option value="sometimes">Sometimes</option>
+          <option value="no">No</option>
+        </select>
+      </label>
+      <label>
+        Do you enjoy UI and visual design work?
+        <select id="ui-preference">
+          <option value="yes">Yes</option>
+          <option value="sometimes">Sometimes</option>
+          <option value="no">No</option>
+        </select>
+      </label>
+      <label>
+        Are you comfortable with math/statistics?
+        <select id="math-preference">
+          <option value="yes">Yes</option>
+          <option value="sometimes">Sometimes</option>
+          <option value="no">No</option>
+        </select>
+      </label>
+      <label>
+        Do you like infrastructure and deployment tasks?
+        <select id="infra-preference">
+          <option value="yes">Yes</option>
+          <option value="sometimes">Sometimes</option>
+          <option value="no">No</option>
+        </select>
+      </label>
+      <label>
+        Do you prefer collaborative team workflows?
+        <select id="collab-preference">
+          <option value="yes">Yes</option>
+          <option value="sometimes">Sometimes</option>
+          <option value="no">No</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button id="recommend-career-btn" data-label="Get Career Recommendation">Get Career Recommendation</button>
+      <a href="dashboard.html"><button type="button" class="button-secondary">Go to Dashboard</button></a>
+    </div>
+    <p id="career-status" class="status"></p>
+  </section>
+
+  <section id="career-output" class="panel roadmap-panel">
+    <p class="section-subtitle">No recommendation yet.</p>
+  </section>
+</main>
+
+<script type="module" src="js/guard.js"></script>
+<script type="module" src="js/career-quiz.js"></script>
+</body>
+</html>

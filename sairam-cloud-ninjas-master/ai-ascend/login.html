@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="brand">Careercraft</div>
+  <nav class="topnav">
+    <a class="text-link" href="index.html">Home</a>
+    <a class="text-link" href="signup.html">Signup</a>
+  </nav>
+</header>
+
+<main class="center-wrap">
+  <section class="panel form-panel">
+    <h2>Welcome Back</h2>
+    <p class="section-subtitle">Login to continue your learning journey.</p>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button id="login-btn" data-label="Login" onclick="login()">Login</button>
+    <p id="form-status" class="status"></p>
+  </section>
+</main>
+
+<script type="module" src="js/auth.js"></script>
+</body>
+</html>
