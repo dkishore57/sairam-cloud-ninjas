@@ -10,6 +10,9 @@ let stats = {
   completedPaths: 0,
   totalPaths: PATHS.length
 }
+let gamification = { xp: 0 }
+let badges = { unlockedCount: 0, total: 0, items: [] }
+let leaderboard = []
 
 function progressText(path){
   const watchedIds = progress.watched[path.id] || []
@@ -66,6 +69,48 @@ function renderStats(){
   `
 }
 
+function renderGamification(){
+  const summaryEl = document.getElementById("gamification-summary")
+  summaryEl.innerHTML = `
+    <article class="stat-card">
+      <p>Total XP</p>
+      <h3>${gamification.xp}</h3>
+    </article>
+    <article class="stat-card">
+      <p>Badges Unlocked</p>
+      <h3>${badges.unlockedCount}/${badges.total}</h3>
+    </article>
+  `
+
+  const badgeListEl = document.getElementById("badge-list")
+  const items = Array.isArray(badges.items) ? badges.items : []
+  if(items.length === 0){
+    badgeListEl.innerHTML = `<p class="section-subtitle">No badges available.</p>`
+    return
+  }
+  badgeListEl.innerHTML = items.map(item => `
+    <article class="badge-chip">
+      <h4>${item.unlocked ? "Unlocked" : "Locked"}: ${item.name}</h4>
+      <p>${item.rule}</p>
+    </article>
+  `).join("")
+}
+
+function renderLeaderboard(){
+  const el = document.getElementById("leaderboard-list")
+  if(leaderboard.length === 0){
+    el.innerHTML = `<p class="section-subtitle">No leaderboard data yet.</p>`
+    return
+  }
+
+  el.innerHTML = leaderboard.map(item => `
+    <div class="leaderboard-row">
+      <p>#${item.rank} ${item.name}</p>
+      <p>XP ${item.xp}</p>
+    </div>
+  `).join("")
+}
+
 function renderCards(){
   const grid = document.getElementById("path-grid")
   const searchText = document.getElementById("path-search").value.trim().toLowerCase()
@@ -91,13 +136,24 @@ async function init(){
     const data = await apiGet("/progress")
     progress = data.progress || progress
     stats = data.stats || stats
+    gamification = data.gamification || gamification
+    badges = data.badges || badges
   }catch(_error){
     // Keep UI usable even when progress is unavailable.
+  }
+
+  try{
+    const data = await apiGet("/leaderboard")
+    leaderboard = data.leaderboard || leaderboard
+  }catch(_error){
+    // Keep dashboard usable even when leaderboard is unavailable.
   }
 
   document.getElementById("path-search").addEventListener("input", renderCards)
   document.getElementById("level-filter").addEventListener("change", renderCards)
   renderStats()
+  renderGamification()
+  renderLeaderboard()
   renderCards()
 }
 

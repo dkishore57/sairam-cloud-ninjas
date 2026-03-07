@@ -33,6 +33,24 @@ export async function dbQuery(sql, params = []){
   return rows
 }
 
+async function hasColumn(connection, tableName, columnName){
+  const [rows] = await connection.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+     WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+    [process.env.MYSQL_DATABASE, tableName, columnName]
+  )
+  return Array.isArray(rows) && rows.length > 0
+}
+
+async function hasIndex(connection, tableName, indexName){
+  const [rows] = await connection.query(
+    `SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS
+     WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?`,
+    [process.env.MYSQL_DATABASE, tableName, indexName]
+  )
+  return Array.isArray(rows) && rows.length > 0
+}
+
 export async function initDatabase(){
   const connection = await mysql.createConnection({
     host: process.env.MYSQL_HOST,
@@ -48,25 +66,16 @@ export async function initDatabase(){
     const schemaSql = await fs.readFile(SCHEMA_PATH, "utf-8")
     await connection.query(schemaSql)
 
-    const columns = await connection.query(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
-       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'chat_messages' AND COLUMN_NAME = 'path_id'`,
-      [process.env.MYSQL_DATABASE]
-    )
-    const hasPathId = Array.isArray(columns?.[0]) && columns[0].length > 0
-    if(!hasPathId){
+    if(!(await hasColumn(connection, "users", "xp"))){
+      await connection.query("ALTER TABLE users ADD COLUMN xp INT NOT NULL DEFAULT 0 AFTER password_hash")
+    }
+    if(!(await hasColumn(connection, "chat_messages", "path_id"))){
       await connection.query(
         "ALTER TABLE chat_messages ADD COLUMN path_id VARCHAR(64) NOT NULL DEFAULT 'frontend' AFTER user_id"
       )
     }
 
-    const indexes = await connection.query(
-      `SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS
-       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'chat_messages' AND INDEX_NAME = 'idx_chat_user_path_created_at'`,
-      [process.env.MYSQL_DATABASE]
-    )
-    const hasIndex = Array.isArray(indexes?.[0]) && indexes[0].length > 0
-    if(!hasIndex){
+    if(!(await hasIndex(connection, "chat_messages", "idx_chat_user_path_created_at"))){
       await connection.query(
         "CREATE INDEX idx_chat_user_path_created_at ON chat_messages (user_id, path_id, created_at)"
       )

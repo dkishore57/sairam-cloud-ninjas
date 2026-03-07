@@ -136,13 +136,40 @@ function normalizeRoadmap(raw){
   }
 }
 
+function normalizeFlashcards(raw){
+  const cards = Array.isArray(raw?.cards)
+    ? raw.cards
+      .map(item => ({
+        question: String(item?.question || "").trim(),
+        hint: String(item?.hint || "").trim(),
+        answer: String(item?.answer || "").trim()
+      }))
+      .filter(item => item.question && item.answer)
+      .slice(0, 12)
+    : []
+  return cards
+}
+
+function fallbackFlashcards(path, watchedTitles = []){
+  const topics = (watchedTitles.length > 0 ? watchedTitles : path.videos.map(video => video.title)).slice(0, 8)
+  if(topics.length === 0){
+    return []
+  }
+  return topics.map(topic => ({
+    question: `What is ${topic} and why is it useful in ${path.title}?`,
+    hint: `Think about where ${topic} fits in practical workflows.`,
+    answer: `${topic} is a core concept in ${path.title}. Focus on definition, use cases, and one practical implementation example.`
+  }))
+}
+
 const TECH_SKILLS = [
   "python", "javascript", "typescript", "java", "go", "c++", "sql", "mongodb", "mysql",
   "postgresql", "redis", "docker", "kubernetes", "linux", "git", "github actions",
   "terraform", "aws", "azure", "gcp", "node.js", "express", "react", "html", "css",
   "rest api", "graphql", "microservices", "system design", "api security", "oauth",
-  "jwt", "data structures", "algorithms", "ci/cd", "testing", "unit testing",
-  "machine learning", "deep learning", "pandas", "numpy", "scikit-learn"
+  "jwt", "data structures", "algorithms", "ci/cd", "testing", "unit testing", "cybersecurity",
+  "ethical hacking", "penetration testing", "kali linux", "siem", "soc", "ids", "ips", "cryptography",
+  "machine learning", "deep learning", "pandas", "numpy", "scikit-learn", "tensorflow", "pytorch", "keras", "nlp", "computer vision", "mlops"
 ]
 
 const ROLE_SKILL_BASELINES = {
@@ -150,6 +177,8 @@ const ROLE_SKILL_BASELINES = {
   "frontend developer": ["html", "css", "javascript", "typescript", "react", "rest api", "testing", "git"],
   "devops engineer": ["linux", "docker", "kubernetes", "terraform", "aws", "ci/cd", "github actions", "system design"],
   "cloud engineer": ["aws", "azure", "gcp", "terraform", "docker", "kubernetes", "linux", "ci/cd"],
+  "cybersecurity engineer": ["network security", "linux", "python", "ethical hacking", "penetration testing", "cryptography", "siem", "soc", "cloud security"],
+  "ai/ml engineer": ["python", "machine learning", "deep learning", "nlp", "computer vision", "tensorflow", "pytorch", "mlops"],
   "data scientist": ["python", "sql", "pandas", "numpy", "scikit-learn", "machine learning", "deep learning"],
   "software developer": ["javascript", "python", "sql", "git", "testing", "rest api", "data structures", "algorithms"]
 }
@@ -204,6 +233,9 @@ function inferTargetRole({ targetRole, resumeText, jobDescriptions }){
     { pattern: /frontend|front-end|ui developer/, role: "Frontend Developer" },
     { pattern: /devops|site reliability|sre/, role: "DevOps Engineer" },
     { pattern: /cloud engineer|cloud architect/, role: "Cloud Engineer" }
+    ,
+    { pattern: /cybersecurity|cyber security|security analyst|ethical hacking|penetration testing|soc/, role: "Cybersecurity Engineer" },
+    { pattern: /ai\/ml|ai ml|machine learning engineer|ml engineer|artificial intelligence/, role: "AI/ML Engineer" }
   ]
   const matched = checks.find(item => item.pattern.test(source))
   return matched ? matched.role : "Software Developer"
@@ -324,8 +356,49 @@ function buildStats(progress){
   return { totalVideos, watchedVideos, remainingVideos, completedPaths, totalPaths }
 }
 
+function isVideoValidForPath(selectedPath, pathId, videoId){
+  const existsInPath = selectedPath.videos.some(video => video.id === videoId)
+  if(existsInPath){
+    return true
+  }
+  // Backward-compatible fallback for freshly added videos when client/server metadata is temporarily out of sync.
+  return typeof videoId === "string" && videoId.startsWith(`${pathId}-`)
+}
+
+function buildBadges(gamification, stats){
+  const templates = [
+    { id: "first-watch", name: "First Watch", rule: "Watch your first video", unlocked: stats.watchedVideos >= 1 },
+    { id: "path-finisher", name: "Path Finisher", rule: "Complete your first path", unlocked: stats.completedPaths >= 1 },
+    { id: "xp-500", name: "XP 500", rule: "Reach 500 total XP", unlocked: gamification.xp >= 500 }
+  ]
+  const unlockedCount = templates.filter(item => item.unlocked).length
+  return { unlockedCount, total: templates.length, items: templates }
+}
+
+async function getGamificationByUserId(userId){
+  const rows = await dbQuery(
+    "SELECT xp FROM users WHERE id = ? LIMIT 1",
+    [userId]
+  )
+  const row = rows[0] || {}
+  return {
+    xp: Number(row.xp || 0)
+  }
+}
+
+async function applyLearningActivity(userId, xpAward){
+  await dbQuery("UPDATE users SET xp = xp + ? WHERE id = ?", [xpAward, userId])
+}
+
+async function applyXpDelta(userId, delta){
+  await dbQuery(
+    "UPDATE users SET xp = GREATEST(0, xp + ?) WHERE id = ?",
+    [delta, userId]
+  )
+}
+
 async function getProgressByUserId(userId){
-  const [videoRows, completionRows] = await Promise.all([
+  const [videoRows, completionRows, gamification] = await Promise.all([
     dbQuery(
       "SELECT path_id, video_id FROM user_video_progress WHERE user_id = ? ORDER BY watched_at ASC",
       [userId]
@@ -333,11 +406,13 @@ async function getProgressByUserId(userId){
     dbQuery(
       "SELECT path_id FROM user_path_completion WHERE user_id = ? ORDER BY completed_at ASC",
       [userId]
-    )
+    ),
+    getGamificationByUserId(userId)
   ])
   const progress = buildProgress(videoRows, completionRows)
   const stats = buildStats(progress)
-  return { progress, stats }
+  const badges = buildBadges(gamification, stats)
+  return { progress, stats, gamification, badges }
 }
 
 async function authMiddleware(req, res, next){
@@ -485,15 +560,17 @@ app.post("/api/progress/watch", authMiddleware, async (req, res) => {
     return res.status(404).json({ message: "Invalid path" })
   }
 
-  const existsInPath = selectedPath.videos.some(video => video.id === videoId)
-  if(!existsInPath){
+  if(!isVideoValidForPath(selectedPath, pathId, videoId)){
     return res.status(404).json({ message: "Invalid video for this path" })
   }
 
-  await dbQuery(
+  const writeResult = await dbQuery(
     "INSERT IGNORE INTO user_video_progress (user_id, path_id, video_id) VALUES (?, ?, ?)",
     [req.user.id, pathId, videoId]
   )
+  if(Number(writeResult?.affectedRows || 0) > 0){
+    await applyLearningActivity(req.user.id, 10)
+  }
 
   const data = await getProgressByUserId(req.user.id)
   return res.json(data)
@@ -510,16 +587,22 @@ app.post("/api/progress/unwatch", authMiddleware, async (req, res) => {
     return res.status(404).json({ message: "Invalid path" })
   }
 
-  await dbQuery(
+  const videoDeleteResult = await dbQuery(
     "DELETE FROM user_video_progress WHERE user_id = ? AND path_id = ? AND video_id = ?",
     [req.user.id, pathId, videoId]
   )
+  if(Number(videoDeleteResult?.affectedRows || 0) > 0){
+    await applyXpDelta(req.user.id, -10)
+  }
 
   // If a user marks any video as unwatched, completion for that path should be removed.
-  await dbQuery(
+  const completionDeleteResult = await dbQuery(
     "DELETE FROM user_path_completion WHERE user_id = ? AND path_id = ?",
     [req.user.id, pathId]
   )
+  if(Number(completionDeleteResult?.affectedRows || 0) > 0){
+    await applyXpDelta(req.user.id, -200)
+  }
 
   const data = await getProgressByUserId(req.user.id)
   return res.json(data)
@@ -545,13 +628,31 @@ app.post("/api/progress/complete", authMiddleware, async (req, res) => {
     return res.status(400).json({ message: "Watch all videos before completing this path" })
   }
 
-  await dbQuery(
+  const writeResult = await dbQuery(
     "INSERT IGNORE INTO user_path_completion (user_id, path_id) VALUES (?, ?)",
     [req.user.id, pathId]
   )
+  if(Number(writeResult?.affectedRows || 0) > 0){
+    await applyLearningActivity(req.user.id, 200)
+  }
 
   const data = await getProgressByUserId(req.user.id)
   return res.json(data)
+})
+
+app.get("/api/leaderboard", authMiddleware, async (_req, res) => {
+  const rows = await dbQuery(
+    `SELECT name, xp
+     FROM users
+     ORDER BY xp DESC, name ASC
+     LIMIT 20`
+  )
+  const leaderboard = rows.map((row, index) => ({
+    rank: index + 1,
+    name: row.name,
+    xp: Number(row.xp || 0)
+  }))
+  res.json({ leaderboard })
 })
 
 app.get("/api/chat/history", authMiddleware, async (req, res) => {
@@ -773,6 +874,82 @@ app.post("/api/path-generator", authMiddleware, async (req, res) => {
   }
 })
 
+app.post("/api/flashcards", authMiddleware, async (req, res) => {
+  const { pathId, watchedTitles } = req.body || {}
+  if(!pathId || !PATHS_BY_ID[pathId]){
+    return res.status(400).json({ message: "Valid pathId is required" })
+  }
+  const selectedPath = PATHS_BY_ID[pathId]
+  const safeWatchedTitles = Array.isArray(watchedTitles)
+    ? watchedTitles.map(item => String(item || "").trim()).filter(Boolean).slice(0, 10)
+    : []
+
+  if(!process.env.GEMINI_API_KEY){
+    return res.json({ cards: fallbackFlashcards(selectedPath, safeWatchedTitles) })
+  }
+
+  const prompt = [
+    `Generate concise study flashcards for this domain: ${selectedPath.title}.`,
+    `Level: ${selectedPath.level}.`,
+    `Description: ${selectedPath.description}`,
+    safeWatchedTitles.length > 0
+      ? `Prioritize these watched topics: ${safeWatchedTitles.join(", ")}`
+      : `Available topics: ${selectedPath.videos.map(video => video.title).slice(0, 12).join(", ")}`,
+    "Return only valid JSON with this exact schema:",
+    "{",
+    '  "cards": [',
+    '    {"question":"...","hint":"...","answer":"..."}',
+    "  ]",
+    "}",
+    "Rules:",
+    "- 6 to 10 cards.",
+    "- Question should test understanding.",
+    "- Hint must be short and useful.",
+    "- Answer should be clear and 1-3 sentences."
+  ].join("\n")
+
+  try{
+    const modelToUse = resolvedGeminiModel || GEMINI_MODEL
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }]
+        })
+      }
+    )
+
+    const data = await response.json().catch(() => ({}))
+    if(!response.ok){
+      const upstreamMessage = data?.error?.message || "AI service request failed"
+      const isQuotaError = response.status === 429 || /quota exceeded/i.test(upstreamMessage)
+      if(isQuotaError){
+        const retryAfterSec = extractRetryAfterSec(upstreamMessage)
+        return res.status(429).json({
+          code: "quota_exceeded",
+          message: retryAfterSec
+            ? `AI quota exceeded. Please retry in ${retryAfterSec}s or upgrade billing.`
+            : "AI quota exceeded. Please retry later or upgrade billing.",
+          retryAfterSec
+        })
+      }
+      return res.status(502).json({ code: "upstream_error", message: upstreamMessage })
+    }
+
+    const raw = (data?.candidates?.[0]?.content?.parts || [])
+      .map(part => part?.text || "")
+      .join("")
+      .trim()
+    const parsed = parseJsonFromText(raw)
+    const cards = normalizeFlashcards(parsed)
+    return res.json({ cards: cards.length > 0 ? cards : fallbackFlashcards(selectedPath, safeWatchedTitles) })
+  }catch(_error){
+    return res.json({ cards: fallbackFlashcards(selectedPath, safeWatchedTitles) })
+  }
+})
+
 app.post("/api/skill-gap-analyzer", authMiddleware, async (req, res) => {
   const { targetRole, resumeText, linkedinSkills, jobDescriptions } = req.body || {}
   const cleanResumeText = String(resumeText || "").trim()
@@ -817,7 +994,7 @@ app.post("/api/skill-gap-analyzer", authMiddleware, async (req, res) => {
     '  "targetRole":"...",',
     '  "missingSkills":["..."],',
     '  "existingStrengths":["..."],',
-    '  "recommendedLearningPaths":[{"pathId":"frontend|backend|devops|cloud","title":"...","reason":"..."}],',
+    '  "recommendedLearningPaths":[{"pathId":"frontend|backend|devops|cloud|cybersecurity|aiml","title":"...","reason":"..."}],',
     '  "analysis":{"summary":"...","next30Days":"..."}',
     "}",
     "Rules:",

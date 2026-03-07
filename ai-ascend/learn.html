@@ -11,7 +11,7 @@
   <div class="brand">CAREER CRAFT</div>
   <nav class="topnav">
     <a class="text-link" href="dashboard.html">Dashboard</a>
-    <a class="text-link" href="index.html">Home</a>
+    <a class="text-link" href="dashboard.html">Home</a>
     <a class="text-link" href="path-generator.html">AI Path Generator</a>
     <a class="text-link" href="skill-gap.html">AI Skill Gap</a>
     <button class="text-link-btn logout-btn" type="button">Logout</button>
@@ -26,6 +26,13 @@
     <p class="panel-note">This path is curated to cover the full domain. Use Fullscreen for focused learning.</p>
     <p id="path-progress" class="meta progress"></p>
     <button id="complete-path-btn" class="button-secondary">Complete Path</button>
+    <section class="quiz-panel">
+      <div class="video-actions">
+        <button id="generate-flashcards-btn" class="button-secondary" type="button">Generate Flashcards</button>
+      </div>
+      <p id="flashcard-status" class="status"></p>
+      <div id="flashcard-root"></div>
+    </section>
     <div id="videos" class="video-container"></div>
   </section>
 
