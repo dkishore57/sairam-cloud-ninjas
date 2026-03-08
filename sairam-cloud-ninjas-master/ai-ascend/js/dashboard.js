@@ -1,6 +1,6 @@
 import { PATHS } from "../data/paths.js"
 import { apiDelete, apiGet, apiPost, apiPut } from "./services/api.js"
-import { setSelectedPath } from "./services/session.js"
+import { clearSession, setSelectedPath } from "./services/session.js"
 
 let progress = { watched: {}, completed: [] }
 let stats = {
@@ -479,6 +479,17 @@ function bindPlannerEvents(){
   })
 }
 
+function bindLogout(){
+  const logoutBtn = document.getElementById("logout-btn")
+  if(!logoutBtn){
+    return
+  }
+  logoutBtn.addEventListener("click", () => {
+    clearSession()
+    window.location.href = "login.html"
+  })
+}
+
 async function init(){
   try{
     const data = await apiGet("/progress")
@@ -505,6 +516,7 @@ async function init(){
   renderGamification()
   renderCards()
   bindPlannerEvents()
+  bindLogout()
 
   try{
     await loadPlanner()

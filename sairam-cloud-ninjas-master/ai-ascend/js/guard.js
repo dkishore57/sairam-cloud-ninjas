@@ -8,22 +8,16 @@ async function guardRoute(){
   }
 
   try{
-    await apiGet("/auth/me")
+    const authData = await apiGet("/auth/me")
+    const user = authData?.user || null
+    const isDashboard = window.location.pathname.endsWith("dashboard.html")
+    if(isDashboard && user && !user.careerQuizCompleted){
+      window.location.href = "career-quiz.html"
+      return
+    }
   }catch(_error){
     window.location.href = "login.html"
     return
-  }
-
-  const isDashboard = window.location.pathname.endsWith("dashboard.html")
-  if(isDashboard){
-    try{
-      const data = await apiGet("/ai/career-recommend/latest")
-      if(!data.recommendation){
-        window.location.href = "career-quiz.html"
-      }
-    }catch(_error){
-      // Keep dashboard reachable if recommendation endpoint is temporarily unavailable.
-    }
   }
 }
 

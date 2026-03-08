@@ -98,6 +98,63 @@ body{
   font-size:0.92rem;
 }
 
+.hero-visual{
+  margin:24px auto 0;
+  width:min(100%, 980px);
+  border:1px solid #ffffff24;
+  border-radius:18px;
+  overflow:hidden;
+  background:#0d142c;
+  box-shadow:0 24px 48px #0000004d;
+  animation:hero-visual-enter .7s ease both;
+}
+
+.hero-visual img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.workflow-reference{
+  margin:22px auto 0;
+  width:min(100%, 980px);
+  text-align:left;
+}
+
+.workflow-reference h2{
+  margin-bottom:12px;
+}
+
+.workflow-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+  gap:10px;
+}
+
+.workflow-step{
+  background:#ffffff08;
+  border:1px solid #ffffff1f;
+  border-radius:12px;
+  padding:12px;
+  display:grid;
+  gap:8px;
+}
+
+.workflow-step p{
+  color:var(--muted);
+  line-height:1.5;
+  min-height:62px;
+}
+
+.workflow-index{
+  color:#c9b9ff !important;
+  min-height:auto !important;
+  font-size:0.8rem;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
 .actions{
   margin-top:30px;
   display:flex;
@@ -613,6 +670,17 @@ select{
   }
 }
 
+@keyframes hero-visual-enter{
+  from{
+    opacity:0;
+    transform:translateY(10px) scale(0.99);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
 .quiz-question{
   border:1px solid #ffffff1f;
   border-radius:10px;
@@ -836,6 +904,10 @@ select{
 
   .hero{
     margin-top:64px;
+  }
+
+  .hero-visual{
+    border-radius:14px;
   }
 
   .card p{

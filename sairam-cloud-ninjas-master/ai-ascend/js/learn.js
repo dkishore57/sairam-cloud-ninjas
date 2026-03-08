@@ -465,16 +465,15 @@ function render(){
     btn.addEventListener("click", async () => {
       try{
         const videoId = btn.dataset.videoId
-        const before = snapshotGamification()
-        const endpoint = isWatched(videoId) ? "/progress/unwatch" : "/progress/watch"
+        const wasWatched = isWatched(videoId)
+        const endpoint = wasWatched ? "/progress/unwatch" : "/progress/watch"
         const data = await apiPost(endpoint, { pathId: path.id, videoId })
         progress = data.progress || progress
         gamification = data.gamification || gamification
         render()
         renderFallbackPredictionFromProgress()
         await loadPrediction()
-        const after = snapshotGamification()
-        if(isMilestoneReached(before, after, false)){
+        if(!wasWatched){
           celebrate(false)
         }
       }catch(error){

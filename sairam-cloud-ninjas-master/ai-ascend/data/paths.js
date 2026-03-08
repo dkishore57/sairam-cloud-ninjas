@@ -311,14 +311,14 @@ export const PATHS = [
     description: "Build production-ready AI apps with LLMs, RAG pipelines, prompt engineering, and model deployment.",
     tags: ["ai", "llm", "rag", "prompting", "deployment", "python"],
     videos: [
-      { id: "ai-topic-1", title: "Python for AI Engineers", durationMin: 150, url: "", tags: ["python", "foundations"] },
-      { id: "ai-topic-2", title: "Prompt Engineering Fundamentals", durationMin: 120, url: "", tags: ["prompting", "llm"] },
-      { id: "ai-topic-3", title: "LLM Application Architecture", durationMin: 140, url: "", tags: ["llm", "architecture"] },
-      { id: "ai-topic-4", title: "RAG Systems End-to-End", durationMin: 180, url: "", tags: ["rag", "vector-db"] },
-      { id: "ai-topic-5", title: "AI Agent Workflows", durationMin: 130, url: "", tags: ["agents", "automation"] },
-      { id: "ai-topic-6", title: "Model Evaluation and Guardrails", durationMin: 110, url: "", tags: ["evaluation", "safety"] },
-      { id: "ai-topic-7", title: "Deploying AI APIs", durationMin: 120, url: "", tags: ["deployment", "apis"] },
-      { id: "ai-topic-8", title: "AI Capstone Project", durationMin: 180, url: "", tags: ["project", "portfolio"] }
+      { id: "ai-topic-1", title: "Python for AI Engineers", durationMin: 150, url: "https://www.youtube.com/watch?v=rfscVS0vtbw", tags: ["python", "foundations"] },
+      { id: "ai-topic-2", title: "Prompt Engineering Fundamentals", durationMin: 120, url: "https://www.youtube.com/watch?v=QbVFj1uWzHk", tags: ["prompting", "llm"] },
+      { id: "ai-topic-3", title: "LLM Application Architecture", durationMin: 140, url: "https://www.youtube.com/watch?v=jFo_gDOOusk", tags: ["llm", "architecture"] },
+      { id: "ai-topic-4", title: "RAG Systems End-to-End", durationMin: 180, url: "https://www.youtube.com/watch?v=7yXVhDz3OD8", tags: ["rag", "vector-db"] },
+      { id: "ai-topic-5", title: "AI Agent Workflows", durationMin: 130, url: "https://www.youtube.com/watch?v=GWaoin6bprQ", tags: ["agents", "automation"] },
+      { id: "ai-topic-6", title: "Model Evaluation and Guardrails", durationMin: 110, url: "https://www.youtube.com/watch?v=WKTNxaZJf4Y", tags: ["evaluation", "safety"] },
+      { id: "ai-topic-7", title: "Deploying AI APIs", durationMin: 120, url: "https://www.youtube.com/watch?v=2a5414BsYqw", tags: ["deployment", "apis"] },
+      { id: "ai-topic-8", title: "AI Capstone Project", durationMin: 180, url: "https://www.youtube.com/watch?v=o126p1QN_RI", tags: ["project", "portfolio"] }
     ]
   },
   {
@@ -330,14 +330,14 @@ export const PATHS = [
     description: "Train, evaluate, and deploy ML models with MLOps practices for scalable real-world systems.",
     tags: ["machine-learning", "mlops", "python", "models", "deployment"],
     videos: [
-      { id: "ml-topic-1", title: "Math and Statistics Refresher", durationMin: 150, url: "", tags: ["math", "statistics"] },
-      { id: "ml-topic-2", title: "Supervised Learning Basics", durationMin: 170, url: "", tags: ["supervised-learning"] },
-      { id: "ml-topic-3", title: "Model Evaluation Metrics", durationMin: 120, url: "", tags: ["metrics", "evaluation"] },
-      { id: "ml-topic-4", title: "Feature Engineering Techniques", durationMin: 130, url: "", tags: ["features", "preprocessing"] },
-      { id: "ml-topic-5", title: "Deep Learning Foundations", durationMin: 180, url: "", tags: ["deep-learning", "neural-networks"] },
-      { id: "ml-topic-6", title: "MLOps and Model Versioning", durationMin: 150, url: "", tags: ["mlops", "versioning"] },
-      { id: "ml-topic-7", title: "Model Serving and Monitoring", durationMin: 130, url: "", tags: ["serving", "monitoring"] },
-      { id: "ml-topic-8", title: "ML Production Project", durationMin: 180, url: "", tags: ["project", "deployment"] }
+      { id: "ml-topic-1", title: "Math and Statistics Refresher", durationMin: 150, url: "https://www.youtube.com/watch?v=xxpc-HPKN28", tags: ["math", "statistics"] },
+      { id: "ml-topic-2", title: "Supervised Learning Basics", durationMin: 170, url: "https://www.youtube.com/watch?v=7eh4d6sabA0", tags: ["supervised-learning"] },
+      { id: "ml-topic-3", title: "Model Evaluation Metrics", durationMin: 120, url: "https://www.youtube.com/watch?v=85dtiMz9tSo", tags: ["metrics", "evaluation"] },
+      { id: "ml-topic-4", title: "Feature Engineering Techniques", durationMin: 130, url: "https://www.youtube.com/watch?v=0xVqLJe9_CY", tags: ["features", "preprocessing"] },
+      { id: "ml-topic-5", title: "Deep Learning Foundations", durationMin: 180, url: "https://www.youtube.com/watch?v=aircAruvnKk", tags: ["deep-learning", "neural-networks"] },
+      { id: "ml-topic-6", title: "MLOps and Model Versioning", durationMin: 150, url: "https://www.youtube.com/watch?v=06-AZXmwHjo", tags: ["mlops", "versioning"] },
+      { id: "ml-topic-7", title: "Model Serving and Monitoring", durationMin: 130, url: "https://www.youtube.com/watch?v=fwM-I0n3p0A", tags: ["serving", "monitoring"] },
+      { id: "ml-topic-8", title: "ML Production Project", durationMin: 180, url: "https://www.youtube.com/watch?v=7eh4d6sabA0", tags: ["project", "deployment"] }
     ]
   },
   {
@@ -349,14 +349,14 @@ export const PATHS = [
     description: "Analyze business data using SQL, spreadsheets, Python, and dashboards to drive decision-making.",
     tags: ["sql", "excel", "python", "power-bi", "tableau", "analytics"],
     videos: [
-      { id: "da-topic-1", title: "Excel for Data Analysis", durationMin: 140, url: "", tags: ["excel", "spreadsheets"] },
-      { id: "da-topic-2", title: "SQL for Analysts", durationMin: 180, url: "", tags: ["sql", "databases"] },
-      { id: "da-topic-3", title: "Python Pandas Basics", durationMin: 140, url: "", tags: ["python", "pandas"] },
-      { id: "da-topic-4", title: "Data Cleaning and EDA", durationMin: 150, url: "", tags: ["eda", "data-cleaning"] },
-      { id: "da-topic-5", title: "Data Visualization Principles", durationMin: 120, url: "", tags: ["visualization"] },
-      { id: "da-topic-6", title: "Power BI Dashboard Project", durationMin: 150, url: "", tags: ["power-bi", "dashboard"] },
-      { id: "da-topic-7", title: "Tableau for Business Insights", durationMin: 130, url: "", tags: ["tableau", "bi"] },
-      { id: "da-topic-8", title: "Analyst Case Study", durationMin: 160, url: "", tags: ["case-study", "portfolio"] }
+      { id: "da-topic-1", title: "Excel for Data Analysis", durationMin: 140, url: "https://www.youtube.com/watch?v=Vl0H-qTclOg", tags: ["excel", "spreadsheets"] },
+      { id: "da-topic-2", title: "SQL for Analysts", durationMin: 180, url: "https://www.youtube.com/watch?v=HXV3zeQKqGY", tags: ["sql", "databases"] },
+      { id: "da-topic-3", title: "Python Pandas Basics", durationMin: 140, url: "https://www.youtube.com/watch?v=2uvysYbKdjM", tags: ["python", "pandas"] },
+      { id: "da-topic-4", title: "Data Cleaning and EDA", durationMin: 150, url: "https://www.youtube.com/watch?v=r-uOLxNrNk8", tags: ["eda", "data-cleaning"] },
+      { id: "da-topic-5", title: "Data Visualization Principles", durationMin: 120, url: "https://www.youtube.com/watch?v=3Xc3CA655Y4", tags: ["visualization"] },
+      { id: "da-topic-6", title: "Power BI Dashboard Project", durationMin: 150, url: "https://www.youtube.com/watch?v=AGrl-H87pRU", tags: ["power-bi", "dashboard"] },
+      { id: "da-topic-7", title: "Tableau for Business Insights", durationMin: 130, url: "https://www.youtube.com/watch?v=aHaOIvR00So", tags: ["tableau", "bi"] },
+      { id: "da-topic-8", title: "Analyst Case Study", durationMin: 160, url: "https://www.youtube.com/watch?v=r-uOLxNrNk8", tags: ["case-study", "portfolio"] }
     ]
   },
   {
@@ -368,14 +368,14 @@ export const PATHS = [
     description: "Master statistics, ML, experimentation, and storytelling to solve complex data-driven problems.",
     tags: ["data-science", "python", "statistics", "ml", "experimentation"],
     videos: [
-      { id: "ds-topic-1", title: "Python and NumPy Foundations", durationMin: 160, url: "", tags: ["python", "numpy"] },
-      { id: "ds-topic-2", title: "Statistics and Probability", durationMin: 180, url: "", tags: ["statistics", "probability"] },
-      { id: "ds-topic-3", title: "Exploratory Data Analysis", durationMin: 150, url: "", tags: ["eda", "analysis"] },
-      { id: "ds-topic-4", title: "Machine Learning Algorithms", durationMin: 200, url: "", tags: ["ml", "algorithms"] },
-      { id: "ds-topic-5", title: "A/B Testing and Experimentation", durationMin: 130, url: "", tags: ["ab-testing", "experiments"] },
-      { id: "ds-topic-6", title: "Feature Selection and Tuning", durationMin: 130, url: "", tags: ["feature-selection", "tuning"] },
-      { id: "ds-topic-7", title: "Storytelling with Data", durationMin: 110, url: "", tags: ["storytelling", "communication"] },
-      { id: "ds-topic-8", title: "Data Science Capstone", durationMin: 190, url: "", tags: ["capstone", "portfolio"] }
+      { id: "ds-topic-1", title: "Python and NumPy Foundations", durationMin: 160, url: "https://www.youtube.com/watch?v=QUT1VHiLmmI", tags: ["python", "numpy"] },
+      { id: "ds-topic-2", title: "Statistics and Probability", durationMin: 180, url: "https://www.youtube.com/watch?v=xxpc-HPKN28", tags: ["statistics", "probability"] },
+      { id: "ds-topic-3", title: "Exploratory Data Analysis", durationMin: 150, url: "https://www.youtube.com/watch?v=r-uOLxNrNk8", tags: ["eda", "analysis"] },
+      { id: "ds-topic-4", title: "Machine Learning Algorithms", durationMin: 200, url: "https://www.youtube.com/watch?v=7eh4d6sabA0", tags: ["ml", "algorithms"] },
+      { id: "ds-topic-5", title: "A/B Testing and Experimentation", durationMin: 130, url: "https://www.youtube.com/watch?v=hnR5DxP2e2g", tags: ["ab-testing", "experiments"] },
+      { id: "ds-topic-6", title: "Feature Selection and Tuning", durationMin: 130, url: "https://www.youtube.com/watch?v=0xVqLJe9_CY", tags: ["feature-selection", "tuning"] },
+      { id: "ds-topic-7", title: "Storytelling with Data", durationMin: 110, url: "https://www.youtube.com/watch?v=yvXDGKy8KSk", tags: ["storytelling", "communication"] },
+      { id: "ds-topic-8", title: "Data Science Capstone", durationMin: 190, url: "https://www.youtube.com/watch?v=r-uOLxNrNk8", tags: ["capstone", "portfolio"] }
     ]
   },
   {
@@ -387,14 +387,14 @@ export const PATHS = [
     description: "Learn security fundamentals, threat detection, SOC workflows, and practical defense strategies.",
     tags: ["security", "soc", "network-security", "incident-response", "siem"],
     videos: [
-      { id: "sec-topic-1", title: "Cybersecurity Fundamentals", durationMin: 150, url: "", tags: ["fundamentals", "security"] },
-      { id: "sec-topic-2", title: "Network Security Basics", durationMin: 140, url: "", tags: ["network-security"] },
-      { id: "sec-topic-3", title: "Linux and Security Commands", durationMin: 120, url: "", tags: ["linux", "security"] },
-      { id: "sec-topic-4", title: "Threat Detection and SIEM", durationMin: 160, url: "", tags: ["threat-detection", "siem"] },
-      { id: "sec-topic-5", title: "Vulnerability Management", durationMin: 120, url: "", tags: ["vulnerabilities"] },
-      { id: "sec-topic-6", title: "Incident Response Workflow", durationMin: 130, url: "", tags: ["incident-response"] },
-      { id: "sec-topic-7", title: "Cloud Security Basics", durationMin: 130, url: "", tags: ["cloud-security"] },
-      { id: "sec-topic-8", title: "Security Operations Project", durationMin: 170, url: "", tags: ["soc", "project"] }
+      { id: "sec-topic-1", title: "Cybersecurity Fundamentals", durationMin: 150, url: "https://www.youtube.com/watch?v=inWWhr5tnEA", tags: ["fundamentals", "security"] },
+      { id: "sec-topic-2", title: "Network Security Basics", durationMin: 140, url: "https://www.youtube.com/watch?v=IPvYjXCsTg8", tags: ["network-security"] },
+      { id: "sec-topic-3", title: "Linux and Security Commands", durationMin: 120, url: "https://www.youtube.com/watch?v=sWbUDq4S6Y8", tags: ["linux", "security"] },
+      { id: "sec-topic-4", title: "Threat Detection and SIEM", durationMin: 160, url: "https://www.youtube.com/watch?v=9w7Xf9QYk6A", tags: ["threat-detection", "siem"] },
+      { id: "sec-topic-5", title: "Vulnerability Management", durationMin: 120, url: "https://www.youtube.com/watch?v=3Kq1MIfTWCE", tags: ["vulnerabilities"] },
+      { id: "sec-topic-6", title: "Incident Response Workflow", durationMin: 130, url: "https://www.youtube.com/watch?v=3Kq1MIfTWCE", tags: ["incident-response"] },
+      { id: "sec-topic-7", title: "Cloud Security Basics", durationMin: 130, url: "https://www.youtube.com/watch?v=41aS-kk1Sjo", tags: ["cloud-security"] },
+      { id: "sec-topic-8", title: "Security Operations Project", durationMin: 170, url: "https://www.youtube.com/watch?v=inWWhr5tnEA", tags: ["soc", "project"] }
     ]
   },
   {
@@ -406,14 +406,14 @@ export const PATHS = [
     description: "Build modern Android/iOS apps using cross-platform frameworks, APIs, and deployment best practices.",
     tags: ["mobile", "flutter", "react-native", "android", "ios", "api"],
     videos: [
-      { id: "mob-topic-1", title: "Mobile App Architecture Basics", durationMin: 120, url: "", tags: ["architecture", "mobile"] },
-      { id: "mob-topic-2", title: "Dart and Flutter Fundamentals", durationMin: 180, url: "", tags: ["dart", "flutter"] },
-      { id: "mob-topic-3", title: "React Native Crash Course", durationMin: 160, url: "", tags: ["react-native"] },
-      { id: "mob-topic-4", title: "State Management in Mobile Apps", durationMin: 130, url: "", tags: ["state-management"] },
-      { id: "mob-topic-5", title: "Working with REST APIs", durationMin: 120, url: "", tags: ["api", "rest"] },
-      { id: "mob-topic-6", title: "Authentication and Security", durationMin: 110, url: "", tags: ["auth", "security"] },
-      { id: "mob-topic-7", title: "Testing and Debugging Mobile Apps", durationMin: 120, url: "", tags: ["testing", "debugging"] },
-      { id: "mob-topic-8", title: "Publish App to Stores", durationMin: 130, url: "", tags: ["deployment", "play-store", "app-store"] }
+      { id: "mob-topic-1", title: "Mobile App Architecture Basics", durationMin: 120, url: "https://www.youtube.com/watch?v=5xVh-7ywKpE", tags: ["architecture", "mobile"] },
+      { id: "mob-topic-2", title: "Dart and Flutter Fundamentals", durationMin: 180, url: "https://www.youtube.com/watch?v=VPvVD8t02U8", tags: ["dart", "flutter"] },
+      { id: "mob-topic-3", title: "React Native Crash Course", durationMin: 160, url: "https://www.youtube.com/watch?v=0-S5a0eXPoc", tags: ["react-native"] },
+      { id: "mob-topic-4", title: "State Management in Mobile Apps", durationMin: 130, url: "https://www.youtube.com/watch?v=d_m5csmrf7I", tags: ["state-management"] },
+      { id: "mob-topic-5", title: "Working with REST APIs", durationMin: 120, url: "https://www.youtube.com/watch?v=GZvSYJDk-us", tags: ["api", "rest"] },
+      { id: "mob-topic-6", title: "Authentication and Security", durationMin: 110, url: "https://www.youtube.com/watch?v=2jqok-WgelI", tags: ["auth", "security"] },
+      { id: "mob-topic-7", title: "Testing and Debugging Mobile Apps", durationMin: 120, url: "https://www.youtube.com/watch?v=3iEM2bq5mJk", tags: ["testing", "debugging"] },
+      { id: "mob-topic-8", title: "Publish App to Stores", durationMin: 130, url: "https://www.youtube.com/watch?v=QLaP0xUJ8tE", tags: ["deployment", "play-store", "app-store"] }
     ]
   },
   {
@@ -425,14 +425,14 @@ export const PATHS = [
     description: "Design test strategy and build automated test pipelines for reliable, fast software releases.",
     tags: ["qa", "automation", "selenium", "playwright", "api-testing", "cicd"],
     videos: [
-      { id: "qa-topic-1", title: "Testing Fundamentals", durationMin: 120, url: "", tags: ["testing", "qa"] },
-      { id: "qa-topic-2", title: "Manual to Automation Mindset", durationMin: 100, url: "", tags: ["automation"] },
-      { id: "qa-topic-3", title: "Selenium WebDriver Basics", durationMin: 150, url: "", tags: ["selenium"] },
-      { id: "qa-topic-4", title: "Playwright End-to-End Testing", durationMin: 150, url: "", tags: ["playwright", "e2e"] },
-      { id: "qa-topic-5", title: "API Testing with Postman", durationMin: 120, url: "", tags: ["api-testing", "postman"] },
-      { id: "qa-topic-6", title: "Test Frameworks and Reporting", durationMin: 110, url: "", tags: ["framework", "reports"] },
-      { id: "qa-topic-7", title: "CI/CD Integration for Tests", durationMin: 120, url: "", tags: ["cicd", "automation"] },
-      { id: "qa-topic-8", title: "Automation Project", durationMin: 150, url: "", tags: ["project", "portfolio"] }
+      { id: "qa-topic-1", title: "Testing Fundamentals", durationMin: 120, url: "https://www.youtube.com/watch?v=u6QfIXgjwGQ", tags: ["testing", "qa"] },
+      { id: "qa-topic-2", title: "Manual to Automation Mindset", durationMin: 100, url: "https://www.youtube.com/watch?v=2Npq4Gf7V2k", tags: ["automation"] },
+      { id: "qa-topic-3", title: "Selenium WebDriver Basics", durationMin: 150, url: "https://www.youtube.com/watch?v=j7VZsCCnptM", tags: ["selenium"] },
+      { id: "qa-topic-4", title: "Playwright End-to-End Testing", durationMin: 150, url: "https://www.youtube.com/watch?v=4Z2X0iB5Ue0", tags: ["playwright", "e2e"] },
+      { id: "qa-topic-5", title: "API Testing with Postman", durationMin: 120, url: "https://www.youtube.com/watch?v=VywxIQ2ZXw4", tags: ["api-testing", "postman"] },
+      { id: "qa-topic-6", title: "Test Frameworks and Reporting", durationMin: 110, url: "https://www.youtube.com/watch?v=7RT4f2Z_Dzs", tags: ["framework", "reports"] },
+      { id: "qa-topic-7", title: "CI/CD Integration for Tests", durationMin: 120, url: "https://www.youtube.com/watch?v=icZUzgtz_d8", tags: ["cicd", "automation"] },
+      { id: "qa-topic-8", title: "Automation Project", durationMin: 150, url: "https://www.youtube.com/watch?v=j7VZsCCnptM", tags: ["project", "portfolio"] }
     ]
   }
 ]

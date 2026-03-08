@@ -59,7 +59,8 @@ async function login(){
     const data = await apiPost("/auth/login", { email, password })
     setSession(data.token, data.user)
     setStatus("Login successful. Redirecting...")
-    setTimeout(() => { window.location.href = "career-quiz.html" }, 500)
+    const nextPage = data?.user?.careerQuizCompleted ? "dashboard.html" : "career-quiz.html"
+    setTimeout(() => { window.location.href = nextPage }, 500)
   }catch(error){
     setStatus(error.message, true)
   }finally{

@@ -32,7 +32,8 @@ function toPublicUser(user){
   return {
     id: user.id,
     name: user.name,
-    email: user.email
+    email: user.email,
+    careerQuizCompleted: Boolean(Number(user.career_quiz_completed || 0))
   }
 }
 
@@ -2035,7 +2036,10 @@ async function authMiddleware(req, res, next){
 
   try{
     const decoded = jwt.verify(token, JWT_SECRET)
-    const rows = await dbQuery("SELECT id, name, email FROM users WHERE id = ? LIMIT 1", [decoded.sub])
+    const rows = await dbQuery(
+      "SELECT id, name, email, career_quiz_completed FROM users WHERE id = ? LIMIT 1",
+      [decoded.sub]
+    )
     const user = rows[0]
     if(!user){
       return res.status(401).json({ message: "Unauthorized" })
@@ -2110,8 +2114,8 @@ app.post("/api/auth/signup", async (req, res) => {
   }
 
   await dbQuery(
-    "INSERT INTO users (id, name, email, password_hash) VALUES (?, ?, ?, ?)",
-    [user.id, user.name, user.email, user.passwordHash]
+    "INSERT INTO users (id, name, email, password_hash, career_quiz_completed) VALUES (?, ?, ?, ?, ?)",
+    [user.id, user.name, user.email, user.passwordHash, 0]
   )
   await ensureGamificationRow(user.id)
 
@@ -2125,7 +2129,7 @@ app.post("/api/auth/login", async (req, res) => {
   }
 
   const rows = await dbQuery(
-    "SELECT id, name, email, password_hash FROM users WHERE email = ? LIMIT 1",
+    "SELECT id, name, email, password_hash, career_quiz_completed FROM users WHERE email = ? LIMIT 1",
     [email.toLowerCase()]
   )
   const user = rows[0]
@@ -2526,7 +2530,6 @@ app.post("/api/ai/path/generate", authMiddleware, async (req, res) => {
       JSON.stringify(roadmap.phases)
     ]
   )
-
   return res.status(201).json({
     path: {
       id: insertResult.insertId,
@@ -2723,6 +2726,7 @@ app.post("/api/ai/career-recommend", authMiddleware, async (req, res) => {
       JSON.stringify(recommendation.recommendedPaths)
     ]
   )
+  await dbQuery("UPDATE users SET career_quiz_completed = 1 WHERE id = ?", [req.user.id])
 
   return res.status(201).json({
     recommendation: {
